@@ -3,6 +3,7 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
+import pickle
 
 app = Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -24,7 +25,7 @@ control=dbc.Card([
             [
                 dbc.Label("Date :-"),
                 html.Br(),
-                dcc.DatePickerRange(id='demo-date',start_date='2021/6/1',end_date='2022/2/23')
+                dcc.DatePickerRange(id='demo-date',start_date='2020/1/1',end_date='2021/12/23')
             ]
         ),
         html.Div(id='dd-output-container'),
@@ -53,9 +54,27 @@ app.layout = dbc.Container(
 def update_output(value,start_date,end_date):
     sat='You have selected '+ value+ ' from '+start_date+' to '+end_date
     df=pd.read_csv('./csv-files/'+value)
-    df=df[df['Date'] >= start_date]
+    df = df[df['Date'] >= start_date]
     df = df[df['Date'] <= end_date]
-    fig=px.line(data_frame=df,x='Date',y='Close')
+
+
+    df1=df[['Date','Close']]
+    df1['Type']='Observed'
+
+    index=df1.index.values
+
+    #loading arima pickle file
+    file_open=open("./model/arima.pickle","rb")
+    arima_model=pickle.load(file_open)
+
+    df3=arima_model.predict(min(index),max(index))
+    dfdate=df1['Date']
+    df2=pd.DataFrame({'Date':dfdate,'Close':df3,'Type':'Predicted'})
+
+    #combining two dataFrame
+    result=pd.concat([df1,df2])
+
+    fig=px.line(data_frame=result,x='Date',y='Close',color='Type')
     fig2=go.Figure(data=[go.Candlestick(x=df['Date'],open=df['Open'],high=df['High'],low=df['Low'],close=df['Close'])])
     return sat,fig,fig2
 
