@@ -27,6 +27,5 @@ def lstm(start, end):
     dataframe1 = pd.concat([date.reset_index(drop=True), dataframe], axis=1)
     dataframe1['Type'] = 'Predicted'
     real = pd.concat([expecteddf, dataframe1]).reset_index(drop=True)
-    print(real)
     return real
 
