@@ -6,9 +6,9 @@ def lstm(start, end):
     model = load_model('./model/lstm_k_100_o_110_feature_4.h5')
     df = pd.read_csv("./csv-files/BTC-USD.csv")
     df['Date'] = pd.to_datetime(df['Date'])
-    df = df.reset_index(drop=True)
     df = df[df['Date'] >= start]
     df = df[df['Date'] <= end]
+    df = df.reset_index(drop=True)
     indexes = df.index.values
     endindex = max(indexes)
     dc = pd.DataFrame(df[['Open', 'Close', 'High', 'Low']])
