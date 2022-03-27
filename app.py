@@ -29,6 +29,7 @@ control = dbc.Card([
             dbc.Label("Model"),
             dcc.Dropdown({
                 'arima.pickle': 'ARIMA',
+                'arma.pickle' : 'ARMA',
                 'MSDM' : 'Multi Step Dense Model',
                 'CON' : 'Convention Model',
                 'LSTM1' : 'LSTM taking past 100 days Data and predicting the next one day data',
@@ -80,12 +81,12 @@ def update_output(value, start_date, end_date,model):
     df['Date'] = pd.to_datetime(df['Date'])
     df = df[df['Date'] >= start_date]
     df = df[df['Date'] <= end_date]
-    if(model=='arima.pickle'):
+    if model=='arima.pickle' or model=='arma.pickle':
         df1 = df[['Date', 'Close']]
         df1['Type'] = 'Observed'
         index = df1.index.values
         # loading arima pickle file
-        file_open = open("./model/arima.pickle", "rb")
+        file_open = open("./model/"+model, "rb")
         arima_model = pickle.load(file_open)
         df3 = arima_model.predict(min(index), max(index))
         dfdate = df1['Date']
