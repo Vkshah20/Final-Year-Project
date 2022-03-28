@@ -7,7 +7,6 @@ import pickle
 import multistepdense as i
 import conventionalmodel as p
 import lstm1 as t
-import lstm2 as x
 import lstm3 as m
 import lstm4 as l
 import bilstm2 as v
@@ -33,7 +32,6 @@ control = dbc.Card([
                 'MSDM' : 'Multi Step Dense Model',
                 'CON' : 'Convention Model',
                 'LSTM1' : 'LSTM taking past 100 days Data and predicting the next one day data',
-                'LSTM2' : 'LSTM taking previous day data and predicting the value of next day',
                 'LSTM3' : 'LSTM predicting only closing values',
                 'LSTM4': 'LSTM predicting all values',
                 'BILSTM2' : 'BILSTM predicting all values',
@@ -105,9 +103,6 @@ def update_output(value, start_date, end_date,model):
 
     elif model=='LSTM3':
         result=m.lstm(start_date,end_date)
-
-    elif model=='LSTM2':
-        result=x.lstm(start_date,end_date)
 
     elif model=='LSTM1':
         result=t.lstm(start_date,end_date)
