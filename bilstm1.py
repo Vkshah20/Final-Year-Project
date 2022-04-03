@@ -1,8 +1,9 @@
 from keras.models import load_model
 import pandas as pd
 import numpy as np
-def bilstm(start,end):
-    model = load_model('./model/bilstm_k_100_o_110_feature_1.h5')
+def bilstm(start,end,modol):
+    print(modol)
+    model = load_model('./model/'+modol)
     df = pd.read_csv("./csv-files/BTC-USD.csv")
     df['Date'] = pd.to_datetime(df['Date'])
     df = df[df['Date'] >= start]

@@ -28,14 +28,20 @@ control = dbc.Card([
             dbc.Label("Model"),
             dcc.Dropdown({
                 'arima.pickle': 'ARIMA',
-                'arma.pickle' : 'ARMA',
-                'MSDM' : 'Multi Step Dense Model',
-                'CON' : 'Convention Model',
-                'LSTM1' : 'LSTM taking past 100 days Data and predicting the next one day data',
-                'LSTM3' : 'LSTM predicting only closing values',
+                'arma.pickle': 'ARMA',
+                'MSDM': 'Multi Step Dense Model',
+                'CON': 'Convention Model',
+                'LSTM1': 'LSTM taking past 100 days Data and predicting the next one day data',
+                'LSTM3': 'LSTM predicting only closing values',
                 'LSTM4': 'LSTM predicting all values',
-                'BILSTM2' : 'BILSTM predicting all values',
-                'BILSTM1' : 'BILSTM predicting only closing values'
+                'bilstm_k_100_o_110_feature_4.h5': 'BILSTM predicting all values',
+                'conv_bilstm_k_100_o_110_feature_4.h5': 'Conventional-BILSTM Model predicting all values',
+                'conv_lstm_k_100_o_110_feature_4.h5': 'Conventional-LSTM Model predicting all values',
+                'lstm_bilstm_k_100_o_110_feature_4.h5': 'LSTM-BILSTM Model predicting all values',
+                'bilstm_k_100_o_110_feature_1.h5': 'BILSTM predicting only closing values',
+                'conv_bilstm_k_100_o_110_feature_1.h5': 'Conventional-BILSTM Model predicting only closing values',
+                'conv_lstm_k_100_o_110_feature_1.h5': 'Conventional-LSTM Model predicting only closing values',
+                'lstm_bilstm_k_100_o_110_feature_1.h5': 'LSTM-BILSTM Model predicting only closing values',
             },
                 value="arima.pickle", id="model", optionHeight=55,
             ),
@@ -93,22 +99,22 @@ def update_output(value, start_date, end_date,model):
         result = pd.concat([df1, df2])
 
     elif model=='LSTM4':
-        result=l.lstm(start_date,end_date)
+        result=l.lstm(start_date, end_date)
 
-    elif model=='BILSTM2':
-        result=v.bilstm(start_date,end_date)
+    elif model=='bilstm_k_100_o_110_feature_4.h5' or model=='conv_bilstm_k_100_o_110_feature_4.h5' or model=='conv_lstm_k_100_o_110_feature_4.h5' or model=='lstm_bilstm_k_100_o_110_feature_4.h5':
+        result=v.bilstm(start_date, end_date, model)
 
-    elif model=='BILSTM1':
-        result=q.bilstm(start_date,end_date)
+    elif model=='bilstm_k_100_o_110_feature_1.h5' or model=='conv_bilstm_k_100_o_110_feature_1.h5' or model=='conv_lstm_k_100_o_110_feature_1.h5' or model=='lstm_bilstm_k_100_o_110_feature_1.h5':
+        result=q.bilstm(start_date, end_date, model)
 
     elif model=='LSTM3':
-        result=m.lstm(start_date,end_date)
+        result=m.lstm(start_date, end_date)
 
     elif model=='LSTM1':
-        result=t.lstm(start_date,end_date)
+        result=t.lstm(start_date, end_date)
 
     elif model=='CON':
-        result=p.convenmodel(start_date,end_date)
+        result=p.convenmodel(start_date, end_date)
 
     elif model=='MSDM':
         result=i.multidense(start_date,end_date)
