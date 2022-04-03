@@ -4,13 +4,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 import pickle
-import multistepdense as i
-import conventionalmodel as p
-import lstm1 as t
-import lstm3 as m
-import lstm4 as l
-import bilstm2 as v
-import bilstm1 as q
+import feature4 as v
+import feature1 as q
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -29,19 +24,22 @@ control = dbc.Card([
             dcc.Dropdown({
                 'arima.pickle': 'ARIMA',
                 'arma.pickle': 'ARMA',
-                'MSDM': 'Multi Step Dense Model',
-                'CON': 'Convention Model',
-                'LSTM1': 'LSTM taking past 100 days Data and predicting the next one day data',
-                'LSTM3': 'LSTM predicting only closing values',
-                'LSTM4': 'LSTM predicting all values',
-                'bilstm_k_100_o_110_feature_4.h5': 'BILSTM predicting all values',
-                'conv_bilstm_k_100_o_110_feature_4.h5': 'Conventional-BILSTM Model predicting all values',
-                'conv_lstm_k_100_o_110_feature_4.h5': 'Conventional-LSTM Model predicting all values',
-                'lstm_bilstm_k_100_o_110_feature_4.h5': 'LSTM-BILSTM Model predicting all values',
-                'bilstm_k_100_o_110_feature_1.h5': 'BILSTM predicting only closing values',
-                'conv_bilstm_k_100_o_110_feature_1.h5': 'Conventional-BILSTM Model predicting only closing values',
-                'conv_lstm_k_100_o_110_feature_1.h5': 'Conventional-LSTM Model predicting only closing values',
-                'lstm_bilstm_k_100_o_110_feature_1.h5': 'LSTM-BILSTM Model predicting only closing values',
+                'bilstm_model_k_100_o_110_feature_1.h5': 'BILSTM Model predicting only closing price',
+                'conv_bilstm_k_100_o_110_feature_1.h5': 'Conventional-BILSTM Model predicting only closing price',
+                'conv_lstm_k_100_o_110_feature_1.h5': 'Conventional-LSTM Model predicting only closing price',
+                'conv_model_k_100_o_110_feature_1.h5': 'Conventional Model predicting only closing price',
+                'dense_k_100_o_110_feature_1.h5': 'Dense Model predicting only closing price',
+                'lstm_bilstm_k_100_o_110_feature_1.h5': 'LSTM-BILSTM Model predicting only closing price',
+                'lstm_model_k_100_o_110_feature_1.h5': 'LSTM Model predicting only closing price',
+                'multi_step_dense_k_100_o_110_feature_1.h5': 'Multi Step Dense Model predicting only closing price',
+                'bilstm_model_k_100_o_110_feature_4.h5': 'BILSTM Model predicting all four feature',
+                'conv_bilstm_k_100_o_110_feature_4.h5': 'Conventional-BILSTM Model predicting all four feature',
+                'conv_lstm_k_100_o_110_feature_4.h5': 'Conventional-LSTM Model predicting all four feature',
+                'conv_model_k_100_o_110_feature_4.h5': 'Conventional Model predicting all four feature',
+                'dense_k_100_o_110_feature_4.h5': 'Dense Model predicting all four feature',
+                'lstm_bilstm_k_100_o_110_feature_4.h5': 'LSTM-BILSTM Model predicting all four feature',
+                'lstm_model_k_100_o_110_feature_4.h5': 'LSTM Model predicting all four feature',
+                'multi_step_dense_k_100_o_110_feature_4.h5': 'Multi Step Dense Model predicting all four feature',
             },
                 value="arima.pickle", id="model", optionHeight=55,
             ),
@@ -80,11 +78,14 @@ app.layout = dbc.Container(
     [Input('demo-dropdown', 'value'), Input('demo-date', 'start_date'), Input('demo-date', 'end_date'),Input('model','value')]
 )
 def update_output(value, start_date, end_date,model):
+    feature1=list(("bilstm_model_k_100_o_110_feature_1.h5", "conv_bilstm_k_100_o_110_feature_1.h5", "conv_lstm_k_100_o_110_feature_1.h5", "conv_model_k_100_o_110_feature_1.h5", "dense_k_100_o_110_feature_1.h5", "lstm_bilstm_k_100_o_110_feature_1.h5", "lstm_model_k_100_o_110_feature_1.h5", "multi_step_dense_k_100_o_110_feature_1.h5"))
+    feature4=list(("bilstm_model_k_100_o_110_feature_4.h5", "conv_bilstm_k_100_o_110_feature_4.h5", "conv_lstm_k_100_o_110_feature_4.h5", "conv_model_k_100_o_110_feature_4.h5", "dense_k_100_o_110_feature_4.h5", "lstm_bilstm_k_100_o_110_feature_4.h5", "lstm_model_k_100_o_110_feature_4.h5", "multi_step_dense_k_100_o_110_feature_4.h5"))
     sat = 'You have selected ' + value + ' from ' + start_date + ' to ' + end_date + ' using ' + model + ' Model.'
     df = pd.read_csv('./csv-files/' + value)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df[df['Date'] >= start_date]
     df = df[df['Date'] <= end_date]
+
     if model=='arima.pickle' or model=='arma.pickle':
         df1 = df[['Date', 'Close']]
         df1['Type'] = 'Observed'
@@ -98,27 +99,12 @@ def update_output(value, start_date, end_date,model):
         # combining two dataFrame
         result = pd.concat([df1, df2])
 
-    elif model=='LSTM4':
-        result=l.lstm(start_date, end_date)
+    elif model in feature4:
+        result=v.predict4(start_date, end_date, model)
 
-    elif model=='bilstm_k_100_o_110_feature_4.h5' or model=='conv_bilstm_k_100_o_110_feature_4.h5' or model=='conv_lstm_k_100_o_110_feature_4.h5' or model=='lstm_bilstm_k_100_o_110_feature_4.h5':
-        result=v.bilstm(start_date, end_date, model)
+    elif model in feature1:
+        result=q.predict1(start_date, end_date, model)
 
-    elif model=='bilstm_k_100_o_110_feature_1.h5' or model=='conv_bilstm_k_100_o_110_feature_1.h5' or model=='conv_lstm_k_100_o_110_feature_1.h5' or model=='lstm_bilstm_k_100_o_110_feature_1.h5':
-        result=q.bilstm(start_date, end_date, model)
-
-    elif model=='LSTM3':
-        result=m.lstm(start_date, end_date)
-
-    elif model=='LSTM1':
-        result=t.lstm(start_date, end_date)
-
-    elif model=='CON':
-        result=p.convenmodel(start_date, end_date)
-
-    elif model=='MSDM':
-        result=i.multidense(start_date,end_date)
-    
     fig = px.line(data_frame=result, x='Date', y='Close', color='Type')
     fig2 = go.Figure(
         data=[go.Candlestick(x=df['Date'], open=df['Open'], high=df['High'], low=df['Low'], close=df['Close'])])
