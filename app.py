@@ -91,7 +91,7 @@ def update_output(value, start_date, end_date,model):
         df1['Type'] = 'Observed'
         index = df1.index.values
         # loading arima pickle file
-        file_open = open("./model/"+model, "rb")
+        file_open = open("./finalmodel/"+model, "rb")
         arima_model = pickle.load(file_open)
         df3 = arima_model.predict(min(index), max(index))
         dfdate = df1['Date']

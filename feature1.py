@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 def predict1(start,end,modol):
     print(modol)
-    model = load_model('./model/'+modol)
+    model = load_model('./finalmodel/'+modol)
     df = pd.read_csv("./csv-files/BTC-USD.csv")
     df['Date'] = pd.to_datetime(df['Date'])
     df = df[df['Date'] >= start]
