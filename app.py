@@ -14,9 +14,7 @@ control = dbc.Card([
         [
             dbc.Label("Crypto-Currency :-"),
             dcc.Dropdown({
-                'BTC-USD.csv': 'BTC',
-                'ETC-USD.csv': 'ETC',
-                'CRO-USD.csv': 'CRO'
+                'BTC-USD.csv': 'BTC'
             },
                 value="BTC-USD.csv", id="demo-dropdown"
             ),
@@ -106,10 +104,12 @@ def update_output(value, start_date, end_date,model):
         result=q.predict1(start_date, end_date, model)
 
     fig = px.line(data_frame=result, x='Date', y='Close', color='Type')
-    fig2 = go.Figure(
-        data=[go.Candlestick(x=df['Date'], open=df['Open'], high=df['High'], low=df['Low'], close=df['Close'])])
+    if model in feature4:
+        fig2 = go.Figure(data=[go.Candlestick(x=result['Date'], open=result['Open'], high=result['High'], low=result['Low'], close=result['Close'])])
+    else:
+        fig2 = go.Figure(data=[go.Candlestick(x=df['Date'], open=df['Open'], high=df['High'], low=df['Low'], close=df['Close'])])
     return sat, fig, fig2
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

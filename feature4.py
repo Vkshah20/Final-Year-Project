@@ -2,7 +2,6 @@ from keras.models import load_model
 import pandas as pd
 import numpy as np
 def predict4(start,end,modol):
-    print(modol)
     model = load_model('./finalmodel/'+modol)
     df = pd.read_csv("./csv-files/BTC-USD.csv")
     df['Date'] = pd.to_datetime(df['Date'])
