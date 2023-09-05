@@ -1,0 +1,527 @@
+# Default values for deepsight.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+timeZone: "Asia/Calcutta"  # Timezone for the application
+cpuResourceType: low       # Type of CPU resources (low, medium, high)
+githubtoken:              # GitHub token for private repository access
+softwaretag:              # Tag for software version
+
+# Container Image Configuration
+image:
+  pullPolicy: IfNotPresent  # Image pull policy
+
+imagePullSecrets: [name: "registrypullsecret"]  # Image pull secrets for private registries
+
+# Features Configuration (Block)
+features:
+  entryexit: false                # Enable or disable EntryExit feature
+  reactgui: true                  # Enable or disable React GUI feature
+  streamlitgui: false             # Enable or disable Streamlit GUI feature
+  inference3: false               # Enable or disable Inference3 feature
+  faceRecognition: false
+  videoSaving: false
+
+# Database Configuration (Block)
+database:
+  replicaCount: 1           # Number of database replicas
+  databasename: cam_db      # Database name
+  containerName: database   # Name of the database container
+  repository: mysql         # Repository for the database image
+  tagName: debian           # Tag for the database image
+  port: 3306                # Database port
+  metaResources:
+    low:
+      resources: {}         # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "0.8"         # High resource limits for CPU
+          memory: "2G"       # High resource limits for memory
+        requests:
+          cpu: "0.8"         # High resource requests for CPU
+          memory: "2G"       # High resource requests for memory
+  mysqlRootPassword: Dsal@123     # Root password for the MySQL database
+  mysqlUser: pi                   # Username for MySQL
+  mysqlPassword: raspberry        # Password for the MySQL user
+  ##FIXME - Remove fixed  
+  args: ["--max_connections=2000"] # Additional command-line arguments
+  serviceName: database-service   # Name of the database service
+  serviceType: ClusterIP           # Service type for the database service
+  labels:
+    app: database                  # Labels for identifying the application
+
+# Logs Configuration (Block)
+logs:
+  replicaCount: 1                 # Number of logs server replicas
+  containerName: logs-server      # Name of the logs server container
+  repository: balabit/syslog-ng   # Repository for the logs server image
+  tagName: 3.38.1                 # Tag for the logs server image
+  port: 514                        # Port for logs server
+  metaResources:
+    low:
+      resources: {}                # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "0.5"                # High resource limits for CPU
+          memory: "2G"              # High resource limits for memory
+        requests:
+          cpu: "0.5"                # High resource requests for CPU
+          memory: "2G"              # High resource requests for memory
+  serviceName: logs-server-service  # Name of the logs server service
+  serviceType: ClusterIP            # Service type for the logs server service
+  labels:
+    app: logs-server                # Labels for identifying the application
+
+# Inference Configuration (Block)
+inference:
+  replicaCount: 1                    # Number of inference replicas
+  containerName: inference1          # Name of the inference container
+  repository: openvino/model_server  # Repository for the inference image
+  tagName: latest                    # Tag for the inference image
+  softwaretag: coal-india-updates    # Tag for software version
+
+  # Model Weight Files
+  weightfile1:
+    xml: weights/13may_normal_yolov5s_openvino/13may22_yolov5s.xml    # XML file for model weights
+    bin: weights/13may_normal_yolov5s_openvino/13may22_yolov5s.bin    # Binary file for model weights
+    mapping: weights/13may_normal_yolov5s_openvino/13may22_yolov5s.mapping # Mapping file for model weights
+  weightfile2:
+    xml: weights/ppe/last.xml         # XML file for another model's weights
+    bin: weights/ppe/last.bin         # Binary file for another model's weights
+    mapping: weights/ppe/last.mapping # Mapping file for another model's weights
+
+  # Resource Configuration
+  metaResources:
+    low:
+      resources:
+        limits:
+          cpu: "1"                     # Low resource limits for CPU
+          memory: "2G"                 # Low resource limits for memory
+        requests:
+          cpu: "1"                     # Low resource requests for CPU
+          memory: "2G"                 # Low resource requests for memory
+    high:
+      resources:
+        limits:
+          cpu: "4"                     # High resource limits for CPU
+          memory: "8G"                 # High resource limits for memory
+        requests:
+          cpu: "4"                     # High resource requests for CPU
+          memory: "8G"                 # High resource requests for memory
+
+  serviceName: inference-service1     # Name of the inference service
+  serviceType: ClusterIP              # Service type for the inference service
+  port: 9000                          # Port for the inference service
+  grpcWorkers: 2                      # Number of gRPC workers
+  labels:
+    app: inference1                   # Labels for identifying the application
+
+
+# Inference3 Configuration (Block)
+inference3:
+  replicaCount: 1                    # Number of inference3 replicas
+  containerName: inference3          # Name of the inference3 container
+  repository: openvino/model_server  # Repository for the inference3 image
+  tagName: latest                    # Tag for the inference3 image
+  softwaretag: coal-india-updates    # Tag for software version
+
+  # Model Weight Files for Inference3
+  weightfile1:
+    xml: weights/fire/last.xml        # XML file for fire detection model weights
+    bin: weights/fire/last.bin        # Binary file for fire detection model weights
+    mapping: weights/fire/last.mapping # Mapping file for fire detection model weights
+  weightfile2:
+    xml: weights/vehicle/last.xml     # XML file for vehicle detection model weights
+    bin: weights/vehicle/last.bin     # Binary file for vehicle detection model weights
+    mapping: weights/vehicle/last.mapping # Mapping file for vehicle detection model weights
+
+  # Resource Configuration for Inference3
+  metaResources:
+    low:
+      resources:
+        limits:
+          cpu: "1"                     # Low resource limits for CPU
+          memory: "2G"                 # Low resource limits for memory
+        requests:
+          cpu: "1"                     # Low resource requests for CPU
+          memory: "2G"                 # Low resource requests for memory
+    high:
+      resources:
+        limits:
+          cpu: "4"                     # High resource limits for CPU
+          memory: "8G"                 # High resource limits for memory
+        requests:
+          cpu: "4"                     # High resource requests for CPU
+          memory: "8G"                 # High resource requests for memory
+
+  serviceName: inference-service3     # Name of the inference service
+  serviceType: ClusterIP              # Service type for the inference service
+  port: 9000                          # Port for the inference service
+  grpcWorkers: 2                      # Number of gRPC workers
+  labels:
+    app: inference3                   # Labels for identifying the application
+
+# Video Saving Configuration (Block)
+videoSaving:
+  replicaCount: 1                    # Number of video saving replicas
+  containerName: video-saving        # Name of the video-saving container
+  repository: deepsightailabs/rpi_image # Repository for the video-saving image
+  tagName: api.0.21.5                # Tag for the video-saving image
+  port: 8090                         # Port for the video-saving service
+  metaResources:
+    low:
+      resources: {}                  # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "5"                    # High resource limits for CPU
+          memory: "10G"                # High resource limits for memory
+        requests:
+          cpu: "5"                    # High resource requests for CPU
+          memory: "10G"                # High resource requests for memory
+  serviceName: video-saving-service  # Name of the video-saving service
+  serviceType: ClusterIP             # Service type for the video-saving service
+  labels:
+    app: video-saving                # Labels for identifying the application
+
+faceRecognition:
+  replicaCount: 1                    # Number of video saving replicas
+  containerName: face-recognition     # Name of the video-saving container
+  repository: deepsightailabs/rpi_image # Repository for the video-saving image
+  tagName: api.0.21.5                # Tag for the video-saving image
+  port: 8080                         # Port for the video-saving service
+  metaResources:
+    low:
+      resources: {}                  # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "5"                    # High resource limits for CPU
+          memory: "10G"               # High resource limits for memory
+        requests:
+          cpu: "5"                    # High resource requests for CPU
+          memory: "10G"               # High resource requests for memory
+  serviceName: face-recognition-service  # Name of the video-saving service
+  serviceType: ClusterIP             # Service type for the video-saving service
+  labels:
+    app: faceRecognition             # Labels for identifying the application
+# React GUI Configuration (Block)
+react:
+  replicaCount: 1                   # Number of React GUI replicas
+  containerName: react-gui          # Name of the React GUI container
+  repository: deepsightailabs/rpi_image # Repository for the React GUI image
+  tagName: reactgui.2.0.9           # Tag for the React GUI image
+  metaResources:
+    low:
+      resources: {}                 # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "1"                   # High resource limits for CPU
+          memory: "2G"               # High resource limits for memory
+        requests:
+          cpu: "1"                   # High resource requests for CPU
+          memory: "2G"               # High resource requests for memory
+  serviceName: react-gui-service    # Name of the React GUI service
+
+  # TODO: If someone selects it as NodePort, they will use the following ports
+  serviceType: LoadBalancer         # Service type for the React GUI service
+  ports:
+    react:
+      port: 3000                     # Port for the React application
+      nodePort: 31000                # NodePort for the React application
+      name: react                    # Name of the React application port
+    middleware:
+      port: 8000                     # Port for the middleware
+      nodePort: 31002                # NodePort for the middleware
+      name: middleware               # Name of the middleware port
+  
+  labels:
+    app: react-gui                   # Labels for identifying the application
+
+
+# License Configuration (Block)
+license:
+  replicaCount: 1                  # Number of license replicas
+  containerName: license           # Name of the license container
+  repository: deepsightailabs/rpi_image # Repository for the license image
+  tagName: licnese17feb            # Tag for the license image
+  metaResources:
+    low:
+      resources: {}                # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "1"                  # High resource limits for CPU
+          memory: "1G"              # High resource limits for memory
+        requests:
+          cpu: "0.5"                # High resource requests for CPU
+          memory: "800Mi"           # High resource requests for memory
+  labels:
+    app: license                    # Labels for identifying the application
+
+# Backend Configuration (Block)
+backend:
+  minReplicaCount: 0               # Minimum number of backend replicas
+  maxReplicaCount: 5               # Maximum number of backend replicas
+  pollingInterval: 1               # Polling interval for backend scaling
+  cooldownPeriod: 1               # Cooldown period for backend scaling
+  labels:
+    app: backend                   # Labels for identifying the application
+  maxCamera: 10                   # Maximum number of supported cameras
+  serviceName: headless-backend-service  # Name of the backend service
+  containerName: backend           # Name of the backend container
+  repository: deepsightailabs/rpi_image # Repository for the backend image
+  tagName: backend.0.21.5          # Tag for the backend image
+  metaResources:
+    low:
+      resources:
+        limits:
+          cpu: "2"                  # Low resource limits for CPU
+          memory: "4G"              # Low resource limits for memory
+        requests:
+          cpu: "2"                  # Low resource requests for CPU
+          memory: "4G"              # Low resource requests for memory
+    high:
+      resources:
+        limits:
+          cpu: "2"                  # High resource limits for CPU
+          memory: "4G"              # High resource limits for memory
+        requests:
+          cpu: "2"                  # High resource requests for CPU
+          memory: "4G"              # High resource requests for memory
+
+# Streamlit GUI Configuration (Block)
+streamlit:
+  replicaCount: 1                  # Number of Streamlit GUI replicas
+  containerName: gui               # Name of the Streamlit GUI container
+  repository: deepsightailabs/rpi_image # Repository for the Streamlit GUI image
+  tagName: backend.0.21.5          # Tag for the Streamlit GUI image
+  metaResources:
+    low:
+      resources: {}                # Low resource configuration (CPU and memory limits/requests)
+    high:
+      resources:
+        limits:
+          cpu: "0.5"                # High resource limits for CPU
+          memory: "1G"              # High resource limits for memory
+        requests:
+          cpu: "0.5"                # High resource requests for CPU
+          memory: "1G"              # High resource requests for memory
+  serviceName: streamlit-gui-service # Name of the Streamlit GUI service
+
+  # TODO: If someone selects it as NodePort, they will use the following ports
+  serviceType: LoadBalancer       # Service type for the Streamlit GUI service
+  ports:
+    autosetup:
+      port: 8501                   # Port for Streamlit GUI autosetup
+      nodePort: 30051              # NodePort for Streamlit GUI autosetup
+      name: autosetup              # Name of the autosetup port
+    dashboard:
+      port: 8502                   # Port for Streamlit GUI dashboard
+      nodePort: 30052              # NodePort for Streamlit GUI dashboard
+      name: dashboard              # Name of the dashboard port
+
+  labels:
+    app: streamlit-gui             # Labels for identifying the application
+
+
+# EntryExit Configuration (Block)
+entryexit:
+  minReplicaCount: 0               # Minimum number of EntryExit replicas
+  maxReplicaCount: 5               # Maximum number of EntryExit replicas
+  pollingInterval: 1               # Polling interval for EntryExit scaling
+  cooldownPeriod: 1               # Cooldown period for EntryExit scaling
+  labels:
+    app: entryexit                 # Labels for identifying the application
+  maxCamera: 10                   # Maximum number of supported cameras
+  serviceName: headless-entryexit-service # Name of the EntryExit service
+  containerName: entryexit         # Name of the EntryExit container
+  repository: deepsightailabs/rpi_image # Repository for the EntryExit image
+  tagName: backend.0.21.5          # Tag for the EntryExit image
+  metaResources:
+    low:
+      resources:
+        limits:
+          cpu: "3"                  # Low resource limits for CPU
+          memory: "5G"              # Low resource limits for memory
+        requests:
+          cpu: "3"                  # Low resource requests for CPU
+          memory: "5G"              # Low resource requests for memory
+    high:
+      resources:
+        limits:
+          cpu: "5"                  # High resource limits for CPU
+          memory: "10G"             # High resource limits for memory
+        requests:
+          cpu: "5"                  # High resource requests for CPU
+          memory: "10G"             # High resource requests for memory
+
+# Persistent Volume Claims Configuration (Block)
+persistentVolumeCalim:
+  database: database-pv-claim      # Name of the database persistent volume claim
+  commonFiles: common-files-claim  # Name of the common files persistent volume claim
+  logs: pv-serverlogs-claim         # Name of the server logs persistent volume claim
+  savedVideo: shared-video-files-claim # Name of the shared video files persistent volume claim
+  alertImage: shared-files-claim   # Name of the shared alert image persistent volume claim
+  videoFrame: shared-frames-files-claim # Name of the shared frames files persistent volume claim
+  modelData: model-data-claim      # Name of the model data persistent volume claim
+  frData: fr-data-claim
+
+# Persistent Volumes Configuration (Block)
+persistentVolume:
+  # USE FULL PATH, don't use any variable like BASH Variables 
+  basepath: /mnt/k8s/               # Base path for persistent volumes
+  commonFiles:
+    name: common-files              # Name of the common files persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: common-files-tag        # Labels for identifying the volume name
+    path: "common_files"            # Path within the volume
+    storageCapacity: 1Gi            # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+
+  database:
+    name: database-pv               # Name of the database persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: database-tag            # Labels for identifying the volume name
+    path: "database"                # Path within the volume
+    storageCapacity: 5Gi            # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+
+  logs:
+    name: pv-serverlogs             # Name of the server logs persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: serverlogsfolder        # Labels for identifying the volume name
+    path: "serverlogs"              # Path within the volume
+    storageCapacity: 30Gi           # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+  
+  savedVideo:
+    name: shared-video-files        # Name of the shared video files persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: shared-video-files-tag  # Labels for identifying the volume name
+    path: "shared-video-files"      # Path within the volume
+    storageCapacity: 30Gi           # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+
+  alertImage:
+    name: shared-files              # Name of the shared alert image persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: shared-files-tag        # Labels for identifying the volume name
+    path: "shared-files"            # Path within the volume
+    storageCapacity: 15Gi           # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+
+  videoFrame:
+    name: shared-frames-files       # Name of the shared frames files persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: shared-frames-files-tag # Labels for identifying the volume name
+    path: "shared-frames-files"     # Path within the volume
+    storageCapacity: 15Gi           # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+  
+  frData:
+    name: fr-data-files       # Name of the shared frames files persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: fr-data-files-tag # Labels for identifying the volume name
+    path: "fr-data-files"     # Path within the volume
+    storageCapacity: 60Gi           # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+
+  modelData:
+    name: model-data                # Name of the model data persistent volume
+    labels:
+      type: local                   # Labels for identifying the volume type
+      name: model-tag               # Labels for identifying the volume name
+    path: "models"                  # Path within the volume
+    storageCapacity: 1Gi            # Storage capacity for the volume
+    storageClassName: manual        # Storage class name for the volume
+    
+# ConfigMap Configuration (Block)
+configMap:
+  database: sql-init-config         # Name of the ConfigMap for database initialization
+  syslogConf: configmap-syslog-conf # Name of the ConfigMap for syslog configuration
+  syslogConfig: configmap-syslog-config # Name of the ConfigMap for syslog configuration
+  inferenceConfig1: inference-config-1 # Name of the ConfigMap for inference configuration 1
+  inferenceConfig3: inference-config-3 # Name of the ConfigMap for inference configuration 3
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# service:
+#   type: ClusterIP
+#   port: 80
+
+# ingress:
+#   enabled: false
+#   className: ""
+#   annotations:
+#     {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   hosts:
+#     - host: chart-example.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
+#   tls: []
+#   #  - secretName: chart-example-tls
+#   #    hosts:
+#   #      - chart-example.local
+
+# resources:
+#   {}
+#   # We usually recommend not to specify default resources and to leave this as a conscious
+#   # choice for the user. This also increases chances charts run on environments with little
+#   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+#   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#   # limits:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+#   # requests:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+
+# autoscaling:
+#   enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
