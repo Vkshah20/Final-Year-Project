@@ -226,7 +226,7 @@ react:
   serviceName: react-gui-service    # Name of the React GUI service
 
   # TODO: If someone selects it as NodePort, they will use the following ports
-  serviceType: LoadBalancer         # Service type for the React GUI service
+  serviceType: NodePort         # Service type for the React GUI service
   ports:
     react:
       port: 3000                     # Port for the React application
