@@ -16,10 +16,10 @@ imagePullSecrets: [name: "registrypullsecret"]  # Image pull secrets for private
 features:
   entryexit: true                # Enable or disable EntryExit feature
   reactgui: true                  # Enable or disable React GUI feature
-  streamlitgui: false             # Enable or disable Streamlit GUI feature
+  streamlitgui: true             # Enable or disable Streamlit GUI feature
   inference3: true               # Enable or disable Inference3 feature
-  faceRecognition: false
-  videoSaving: false
+  faceRecognition: true
+  videoSaving: true
 
 # Database Configuration (Block)
 database:
