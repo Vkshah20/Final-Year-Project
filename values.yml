@@ -128,9 +128,9 @@ inference3:
 
   # Model Weight Files for Inference3
   weightfile1:
-    xml: weights/fire/last.xml        # XML file for fire detection model weights
-    bin: weights/fire/last.bin        # Binary file for fire detection model weights
-    mapping: weights/fire/last.mapping # Mapping file for fire detection model weights
+    xml: weights/fire_0509/last.xml        # XML file for fire detection model weights
+    bin: weights/fire_0509/last.bin        # Binary file for fire detection model weights
+    mapping: weights/fire_0509/last.mapping # Mapping file for fire detection model weights
   weightfile2:
     xml: weights/vehicle/last.xml     # XML file for vehicle detection model weights
     bin: weights/vehicle/last.bin     # Binary file for vehicle detection model weights
